@@ -3,21 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENDLESS VOID</title>
+    <title>Endless Runner</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            background-color: #222;
+            border-bottom: 2px solid grey;
+            margin: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .instructions {
+            color: grey;
+            text-align: center;
+            font-size: 14px;
+            position: absolute;
+            top: 10px;
+            width: 100%;
+        }
+    </style>
 </head>
-<body style="background-color: black; color: grey; text-align: center; font-family: Arial, sans-serif;">
-
-    <h1 style="font-size: 24px; font-weight: lighter;">WELCOME TO THE ENDLESS VOID</h1>
-
-    <p style="font-size: 14px; font-weight: lighter;">Use your imagination. The void is endless.</p>
-
-    <marquee behavior="scroll" direction="left" style="color: darkgrey; font-size: 12px;">
-        You are now trapped in the void. There is no escape.
-    </marquee>
-
-    <hr style="border: 1px solid grey;">
-
-    <p style="font-size: 12px; font-weight: lighter;">This game is powered by the absence of existence.</p>
-
+<body>
+    <div class="instructions">Press SPACE to jump & avoid obstacles</div>
+    <canvas id="gameCanvas" width="800" height="300"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let player = { x: 50, y: 200, width: 30, height: 30, dy: 0, gravity: 0.6, jumpPower: -10, onGround: false };
+        let obstacles = [];
+        let speed = 5;
+        let score = 0;
+        
+        function drawPlayer() {
+            ctx.fillStyle = "lightgrey";
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+        
+        function drawObstacles() {
+            ctx.fillStyle = "darkgrey";
+            obstacles.forEach(obs => {
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            });
+        }
+        
+        function updateObstacles() {
+            if (Math.random() < 0.02) {
+                obstacles.push({ x: canvas.width, y: 220, width: 20, height: 30 });
+            }
+            obstacles.forEach(obs => obs.x -= speed);
+            obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
+        }
+        
+        function detectCollision() {
+            return obstacles.some(obs => 
+                player.x < obs.x + obs.width &&
+                player.x + player.width > obs.x &&
+                player.y < obs.y + obs.height &&
+                player.y + player.height > obs.y
+            );
+        }
+        
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawObstacles();
+            updateObstacles();
+            
+            player.dy += player.gravity;
+            player.y += player.dy;
+            if (player.y > 200) {
+                player.y = 200;
+                player.dy = 0;
+                player.onGround = true;
+            } else {
+                player.onGround = false;
+            }
+            
+            if (detectCollision()) {
+                alert("Game Over! Score: " + score);
+                document.location.reload();
+            }
+            
+            score++;
+            speed += 0.001; // Increase speed over time
+            requestAnimationFrame(updateGame);
+        }
+        
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space" && player.onGround) {
+                player.dy = player.jumpPower;
+            }
+        });
+        
+        updateGame();
+    </script>
 </body>
 </html>
