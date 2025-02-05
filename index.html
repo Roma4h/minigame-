@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless Runner</title>
+    <title>Endless Knight</title>
     <style>
         body {
             margin: 0;
@@ -14,13 +14,14 @@
         }
         canvas {
             display: block;
-            background-color: #222;
+            background: url('burned_castle.png') repeat;
+            background-size: cover;
             border-bottom: 2px solid grey;
             margin: auto;
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) rotate(90deg);
         }
         .instructions {
             color: grey;
@@ -29,6 +30,7 @@
             position: absolute;
             top: 10px;
             width: 100%;
+            font-family: 'Press Start 2P', cursive;
         }
     </style>
 </head>
@@ -38,27 +40,30 @@
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
+        let startTime = Date.now();
         
-        let player = { x: 50, y: 200, width: 30, height: 30, dy: 0, gravity: 0.6, jumpPower: -10, onGround: false };
+        let player = { x: 50, y: 200, width: 40, height: 40, dy: 0, gravity: 0.6, jumpPower: -10, onGround: false, sprite: new Image() };
+        player.sprite.src = 'skeleton_knight.png';
+        
         let obstacles = [];
         let speed = 5;
         let score = 0;
         
         function drawPlayer() {
-            ctx.fillStyle = "lightgrey";
-            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.drawImage(player.sprite, player.x, player.y, player.width, player.height);
         }
         
         function drawObstacles() {
-            ctx.fillStyle = "darkgrey";
             obstacles.forEach(obs => {
-                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                ctx.drawImage(obs.sprite, obs.x, obs.y, obs.width, obs.height);
             });
         }
         
         function updateObstacles() {
             if (Math.random() < 0.02) {
-                obstacles.push({ x: canvas.width, y: 220, width: 20, height: 30 });
+                let newObstacle = { x: canvas.width, y: 220, width: 30, height: 30, sprite: new Image() };
+                newObstacle.sprite.src = Math.random() > 0.5 ? 'skull.png' : 'stone.png';
+                obstacles.push(newObstacle);
             }
             obstacles.forEach(obs => obs.x -= speed);
             obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
@@ -87,6 +92,11 @@
                 player.onGround = true;
             } else {
                 player.onGround = false;
+            }
+            
+            let elapsedTime = (Date.now() - startTime) / 1000;
+            if (elapsedTime > 1800) {
+                speed = 50; // Makes it impossible after 30 minutes
             }
             
             if (detectCollision()) {
