@@ -48,7 +48,7 @@
         canvas.height = window.innerHeight;
         
         let startTime = Date.now();
-        let player = { x: 100, y: canvas.height - 100, width: 50, height: 50, dy: 0, gravity: 0.6, jumpPower: -12, onGround: false, sprite: new Image() };
+        let player = { x: 100, y: canvas.height - 150, width: 80, height: 80, dy: 0, gravity: 0.6, jumpPower: -12, onGround: false, sprite: new Image() };
         player.sprite.src = 'skeleton_knight.png';
         
         let obstacles = [];
@@ -67,8 +67,16 @@
         
         function updateObstacles() {
             if (Math.random() < 0.02) {
-                let newObstacle = { x: canvas.width, y: canvas.height - 80, width: 40, height: 40, sprite: new Image() };
+                let newObstacle = { x: canvas.width, y: canvas.height - 120, width: 60, height: 60, sprite: new Image() };
                 newObstacle.sprite.src = Math.random() > 0.5 ? 'skull.png' : 'stone.png';
+                
+                if (obstacles.length > 0) {
+                    let lastObstacle = obstacles[obstacles.length - 1];
+                    if (newObstacle.x - lastObstacle.x < 150) {
+                        return; // Prevent obstacles from being too close
+                    }
+                }
+                
                 obstacles.push(newObstacle);
             }
             obstacles.forEach(obs => obs.x -= speed);
@@ -92,8 +100,8 @@
             
             player.dy += player.gravity;
             player.y += player.dy;
-            if (player.y > canvas.height - 100) {
-                player.y = canvas.height - 100;
+            if (player.y > canvas.height - 150) {
+                player.y = canvas.height - 150;
                 player.dy = 0;
                 player.onGround = true;
             } else {
