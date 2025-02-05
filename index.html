@@ -3,74 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless Maze Game</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #111;
-            font-family: 'Arial', sans-serif;
-            color: #A9A9A9; /* Metallic grey */
-        }
-        .game-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 500px;
-            height: 500px;
-            border: 2px solid #555;
-            background-color: #222;
-        }
-        .player {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #ccc;
-            position: absolute;
-        }
-        .text {
-            font-size: 14px;
-            font-weight: lighter;
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-    </style>
+    <title>ENDLESS VOID</title>
 </head>
-<body>
-    <div class="game-container">
-        <div class="text">Use arrow keys to move. Collect items and avoid obstacles.</div>
-        <div class="player" id="player"></div>
-    </div>
+<body style="background-color: black; color: grey; text-align: center; font-family: Arial, sans-serif;">
 
-    <script>
-        const player = document.getElementById('player');
-        let playerPosition = { x: 0, y: 0 };
-        const gameContainer = document.querySelector('.game-container');
+    <h1 style="font-size: 24px; font-weight: lighter;">WELCOME TO THE ENDLESS VOID</h1>
 
-        // Game movement
-        document.addEventListener('keydown', (e) => {
-            const containerRect = gameContainer.getBoundingClientRect();
-            const playerRect = player.getBoundingClientRect();
+    <p style="font-size: 14px; font-weight: lighter;">Use your imagination. The void is endless.</p>
 
-            if (e.key === 'ArrowUp' && playerPosition.y > 0) {
-                playerPosition.y -= 10;
-            }
-            if (e.key === 'ArrowDown' && playerPosition.y + playerRect.height < containerRect.height) {
-                playerPosition.y += 10;
-            }
-            if (e.key === 'ArrowLeft' && playerPosition.x > 0) {
-                playerPosition.x -= 10;
-            }
-            if (e.key === 'ArrowRight' && playerPosition.x + playerRect.width < containerRect.width) {
-                playerPosition.x += 10;
-            }
+    <marquee behavior="scroll" direction="left" style="color: darkgrey; font-size: 12px;">
+        You are now trapped in the void. There is no escape.
+    </marquee>
 
-            player.style.top = `${playerPosition.y}px`;
-            player.style.left = `${playerPosition.x}px`;
-        });
-    </script>
+    <hr style="border: 1px solid grey;">
+
+    <p style="font-size: 12px; font-weight: lighter;">This game is powered by the absence of existence.</p>
+
 </body>
 </html>
