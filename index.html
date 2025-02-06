@@ -36,11 +36,36 @@
             color: grey;
             text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
         }
+        #gameOverScreen {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #gameOverScreen button {
+            background: grey;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <div class="glitch-text">Press SPACE to jump & avoid obstacles</div>
     <canvas id="gameCanvas"></canvas>
+    <div id="gameOverScreen">
+        <h1>You Died</h1>
+        <p id="scoreText"></p>
+        <p id="highScoreText"></p>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
@@ -48,7 +73,8 @@
         canvas.height = window.innerHeight;
         
         let startTime = Date.now();
-        let player = { x: 100, y: canvas.height - 250, width: 150, height: 150, dy: 0, gravity: 0.6, jumpPower: -12, onGround: false, sprite: new Image() };
+        let highScore = localStorage.getItem("highScore") || 0;
+        let player = { x: 100, y: canvas.height - 250, width: 120, height: 120, dy: 0, gravity: 0.6, jumpPower: -18, onGround: false, sprite: new Image() };
         player.sprite.src = 'skeleton_knight.png';
         
         let obstacles = [];
@@ -67,13 +93,13 @@
         
         function updateObstacles() {
             if (Math.random() < 0.02) {
-                let newObstacle = { x: canvas.width, y: canvas.height - 180, width: 100, height: 100, sprite: new Image() };
+                let newObstacle = { x: canvas.width, y: canvas.height - 200, width: 100, height: 100, sprite: new Image() };
                 newObstacle.sprite.src = Math.random() > 0.5 ? 'skull.png' : 'stone.png';
                 
                 if (obstacles.length > 0) {
                     let lastObstacle = obstacles[obstacles.length - 1];
                     if (newObstacle.x - lastObstacle.x < 300) {
-                        return; // Prevent obstacles from being too close
+                        return;
                     }
                 }
                 
@@ -90,6 +116,20 @@
                 player.y < obs.y + obs.height &&
                 player.y + player.height > obs.y
             );
+        }
+        
+        function gameOver() {
+            document.getElementById("scoreText").textContent = "Score: " + score;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem("highScore", highScore);
+            }
+            document.getElementById("highScoreText").textContent = "High Score: " + highScore;
+            document.getElementById("gameOverScreen").style.display = "block";
+        }
+        
+        function restartGame() {
+            document.location.reload();
         }
         
         function updateGame() {
@@ -110,16 +150,16 @@
             
             let elapsedTime = (Date.now() - startTime) / 1000;
             if (elapsedTime > 1800) {
-                speed = 50; // Makes it impossible after 30 minutes
+                speed = 50;
             }
             
             if (detectCollision()) {
-                alert("Game Over! Score: " + score);
-                document.location.reload();
+                gameOver();
+                return;
             }
             
             score++;
-            speed += 0.001; // Increase speed over time
+            speed += 0.001;
             requestAnimationFrame(updateGame);
         }
         
